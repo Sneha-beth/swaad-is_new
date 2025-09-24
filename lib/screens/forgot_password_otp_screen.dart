@@ -1,29 +1,27 @@
-// lib/screens/otp_verification_screen.dart (Updated with Remember Me)
+// lib/screens/forgot_password_otp_screen.dart (New file)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/keyboard_widget.dart';
-import '../services/auth_service.dart';
-import 'home_screen.dart';
+import 'reset_password_screen.dart';
 
-class OTPVerificationScreen extends StatefulWidget {
-  final String phoneNumber;
-  final bool isSignUp;
-  final bool rememberMe;
+class ForgotPasswordOTPScreen extends StatefulWidget {
+  final String contact;
+  final bool isEmail;
 
-  const OTPVerificationScreen({
+  const ForgotPasswordOTPScreen({
     super.key,
-    required this.phoneNumber,
-    this.isSignUp = false,
-    this.rememberMe = false,
+    required this.contact,
+    required this.isEmail,
   });
 
   @override
-  State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
+  State<ForgotPasswordOTPScreen> createState() =>
+      _ForgotPasswordOTPScreenState();
 }
 
-class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
+class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
   final List<String> _otpDigits = ['', '', '', ''];
   int _currentIndex = 0;
 
@@ -39,7 +37,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'OTP Code Verification',
+          'Verify Code',
           style: GoogleFonts.inter(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
@@ -58,7 +56,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   const SizedBox(height: 20),
                   // Instruction text
                   Text(
-                    'Code has been sent to ${widget.phoneNumber}',
+                    'Verification code has been sent to\n${widget.contact}',
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       color: AppColors.textSecondary,
@@ -80,16 +78,27 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Resend code in ",
+                        "Didn't receive code? ",
                         style: GoogleFonts.inter(
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      Text(
-                        "55 s",
-                        style: GoogleFonts.inter(
-                          color: AppColors.primaryGreen,
-                          fontWeight: FontWeight.w600,
+                      TextButton(
+                        onPressed: () {
+                          // Resend OTP logic
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Verification code sent!'),
+                              backgroundColor: AppColors.primaryGreen,
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Resend',
+                          style: GoogleFonts.inter(
+                            color: AppColors.primaryGreen,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
@@ -97,7 +106,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   const Spacer(),
                   // Verify button
                   CustomButton(
-                    text: 'Verify',
+                    text: 'Verify Code',
                     onPressed: _otpDigits.every((digit) => digit.isNotEmpty)
                         ? () => _verifyOTP()
                         : () {},
@@ -183,19 +192,14 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     // Close loading
     Navigator.pop(context);
 
-    // Complete authentication with Remember Me preference
-    await AuthService.completeOnboarding();
-    await AuthService.login(
-      'demo_token_${DateTime.now().millisecondsSinceEpoch}',
-      rememberMe: widget.rememberMe,
-      phone: widget.phoneNumber,
-    );
-
-    // Navigate to home
-    Navigator.pushAndRemoveUntil(
+    // Navigate to reset password screen
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-      (route) => false,
+      MaterialPageRoute(
+        builder: (context) => ResetPasswordScreen(
+          contact: widget.contact,
+        ),
+      ),
     );
   }
 }

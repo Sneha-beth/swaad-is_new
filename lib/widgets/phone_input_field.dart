@@ -1,5 +1,6 @@
 // lib/widgets/phone_input_field.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
 
@@ -55,15 +56,20 @@ class PhoneInputField extends StatelessWidget {
           Expanded(
             child: TextField(
               controller: controller,
-              keyboardType: TextInputType.phone,
+              keyboardType: TextInputType.number,
+              maxLength: 10, // ← Limit to 10 digits
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, // ← Only allow digits
+              ],
               style: GoogleFonts.inter(fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'Phone Number',
+                hintText: 'Phone Number (10 digits)',
                 hintStyle: GoogleFonts.inter(
                   color: AppColors.textSecondary,
                   fontSize: 16,
                 ),
                 border: InputBorder.none,
+                counterText: '', // Hide character counter
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 16,

@@ -1,10 +1,13 @@
-// lib/screens/login_screen.dart (New)
+// lib/screens/login_screen.dart (Updated with Remember Me and Forget Password)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/phone_input_field.dart';
+import '../services/auth_service.dart';
 import 'otp_verification_screen.dart';
+import 'forgot_password_screen.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -71,34 +74,58 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
             const SizedBox(height: 40),
-            // Phone input
+            // Phone input with 10-digit validation
             PhoneInputField(controller: _phoneController),
             const SizedBox(height: 24),
-            // Remember me checkbox
+            // Remember me and Forgot password row
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Checkbox(
-                    value: _rememberMe,
-                    onChanged: (value) {
-                      setState(() {
-                        _rememberMe = value ?? false;
-                      });
-                    },
-                    activeColor: AppColors.primaryGreen,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
+                // Remember me checkbox
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Checkbox(
+                        value: _rememberMe,
+                        onChanged: (value) {
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
+                        activeColor: AppColors.primaryGreen,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Remember me',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Text(
-                  'Remember me',
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    color: AppColors.textPrimary,
+                // Forgot password button
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: GoogleFonts.inter(
+                      color: AppColors.primaryGreen,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -108,21 +135,15 @@ class _LoginScreenState extends State<LoginScreen> {
             CustomButton(
               text: 'Sign in',
               onPressed: () {
-                if (_phoneController.text.isNotEmpty) {
+                if (_validatePhone()) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => OTPVerificationScreen(
-                        phoneNumber: _phoneController.text,
+                        phoneNumber: '+91 ${_phoneController.text}',
                         isSignUp: false,
+                        rememberMe: _rememberMe,
                       ),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please enter your phone number'),
-                      backgroundColor: Colors.red,
                     ),
                   );
                 }
@@ -151,9 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildSocialButton('assets/images/facebook_icon.png'),
-                _buildSocialButton('assets/images/google_icon.png'),
-                _buildSocialButton('assets/images/apple_icon.png'),
+                _buildSocialButton(Icons.facebook),
+                _buildSocialButton(Icons.g_mobiledata),
+                _buildSocialButton(Icons.apple),
               ],
             ),
           ],
@@ -162,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSocialButton(String iconPath) {
+  Widget _buildSocialButton(IconData icon) {
     return Container(
       width: 60,
       height: 60,
@@ -171,11 +192,38 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
-        child: Image.asset(
-          iconPath,
-          width: 24,
-          height: 24,
+        child: Icon(
+          icon,
+          size: 24,
+          color: AppColors.primaryGreen,
         ),
+      ),
+    );
+  }
+
+  bool _validatePhone() {
+    final phone = _phoneController.text.trim();
+
+    // Check if phone is exactly 10 digits
+    if (phone.length != 10) {
+      _showError('Phone number must be exactly 10 digits');
+      return false;
+    }
+
+    // Check if phone contains only digits
+    if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+      _showError('Phone number must contain only digits');
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
       ),
     );
   }

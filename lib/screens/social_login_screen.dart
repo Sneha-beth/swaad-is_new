@@ -4,8 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/social_login_button.dart';
+import '../services/auth_service.dart';
 import 'create_account_screen.dart';
 import 'login_screen.dart';
+import 'home_screen.dart';
 
 class SocialLoginScreen extends StatelessWidget {
   const SocialLoginScreen({super.key});
@@ -32,7 +34,7 @@ class SocialLoginScreen extends StatelessWidget {
               width: 200,
               height: 200,
               decoration: BoxDecoration(
-                color: AppColors.primaryGreen.withOpacity(0.1),
+                color: AppColors.primaryGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Center(
@@ -58,29 +60,23 @@ class SocialLoginScreen extends StatelessWidget {
             SocialLoginButton(
               icon: 'assets/images/facebook_icon.jpg',
               text: 'Continue with Facebook',
-              onPressed: () {
-                // Handle Facebook login
-                _handleSocialLogin(context, 'Facebook');
-              },
+              onPressed: () => _handleFacebookLogin(context),
             ),
+
             const SizedBox(height: 16),
             SocialLoginButton(
               icon: 'assets/images/google_icon.png',
               text: 'Continue with Google',
-              onPressed: () {
-                // Handle Google login
-                _handleSocialLogin(context, 'Google');
-              },
+              onPressed: () => _handleGoogleLogin(context),
             ),
+
             const SizedBox(height: 16),
             SocialLoginButton(
               icon: 'assets/images/apple_icon.png',
               text: 'Continue with Apple',
-              onPressed: () {
-                // Handle Apple login
-                _handleSocialLogin(context, 'Apple');
-              },
+              onPressed: () => _handleAppleLogin(context),
             ),
+
             const SizedBox(height: 32),
             // Or divider
             Row(
@@ -150,8 +146,82 @@ class SocialLoginScreen extends StatelessWidget {
     );
   }
 
-  void _handleSocialLogin(BuildContext context, String provider) {
-    // Show loading and simulate social login
+  // Handle Google Login
+  void _handleGoogleLogin(BuildContext context) async {
+    _showLoading(context);
+
+    final result = await AuthService.signInWithGoogle();
+    Navigator.pop(context); // Close loading
+
+    if (result != null) {
+      await AuthService.login(
+        result['token'],
+        rememberMe: true,
+        email: result['email'],
+        name: result['name'],
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false,
+      );
+    } else {
+      _showError(context, 'Google sign in failed');
+    }
+  }
+
+  // Handle Facebook Login
+  void _handleFacebookLogin(BuildContext context) async {
+    _showLoading(context);
+
+    final result = await AuthService.signInWithFacebook();
+    Navigator.pop(context); // Close loading
+
+    if (result != null) {
+      await AuthService.login(
+        result['token'],
+        rememberMe: true,
+        email: result['email'],
+        name: result['name'],
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false,
+      );
+    } else {
+      _showError(context, 'Facebook sign in failed');
+    }
+  }
+
+  // Handle Apple Login
+  void _handleAppleLogin(BuildContext context) async {
+    _showLoading(context);
+
+    final result = await AuthService.signInWithApple();
+    Navigator.pop(context); // Close loading
+
+    if (result != null) {
+      await AuthService.login(
+        result['token'],
+        rememberMe: true,
+        email: result['email'],
+        name: result['name'],
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (route) => false,
+      );
+    } else {
+      _showError(context, 'Apple sign in failed');
+    }
+  }
+
+  void _showLoading(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -159,17 +229,14 @@ class SocialLoginScreen extends StatelessWidget {
         child: CircularProgressIndicator(color: AppColors.primaryGreen),
       ),
     );
+  }
 
-    // Simulate API call
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pop(context); // Close loading
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$provider login successful!'),
-          backgroundColor: AppColors.primaryGreen,
-        ),
-      );
-      // Navigate to home or next screen
-    });
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 }
