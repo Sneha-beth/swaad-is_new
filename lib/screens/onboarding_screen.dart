@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
 import '../widgets/onboarding_card.dart';
 import '../widgets/custom_button.dart';
-import 'auth_screen.dart';
+import 'social_login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -53,7 +53,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AuthScreen(),
+                        builder: (context) => const SocialLoginScreen(),
                       ),
                     );
                   },
@@ -117,7 +117,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AuthScreen(),
+                        builder: (context) => const SocialLoginScreen(),
                       ),
                     );
                   } else {

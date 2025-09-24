@@ -56,7 +56,7 @@ class SocialLoginScreen extends StatelessWidget {
             const SizedBox(height: 40),
             // Social login buttons
             SocialLoginButton(
-              icon: 'assets/images/facebook_icon.png',
+              icon: 'assets/images/facebook_icon.jpg',
               text: 'Continue with Facebook',
               onPressed: () {
                 // Handle Facebook login
