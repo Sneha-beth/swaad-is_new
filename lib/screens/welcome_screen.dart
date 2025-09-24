@@ -1,7 +1,6 @@
-// lib/screens/welcome_screen.dart
+// lib/screens/welcome_screen.dart (Updated - Fix deprecated withOpacity)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
 import '../widgets/custom_button.dart';
 import 'onboarding_screen.dart';
 
@@ -28,7 +27,8 @@ class WelcomeScreen extends StatelessWidget {
           Container(
             width: double.infinity,
             height: double.infinity,
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(
+                alpha: 0.4), // ← FIX: Use withValues instead of withOpacity
           ),
           // Content overlay
           Positioned(
@@ -47,7 +47,8 @@ class WelcomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black
+                            .withValues(alpha: 0.1), // ← FIX: Use withValues
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -78,7 +79,8 @@ class WelcomeScreen extends StatelessWidget {
                   'Your favourite foods delivered\nfast at your door.',
                   style: GoogleFonts.inter(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white
+                        .withValues(alpha: 0.9), // ← FIX: Use withValues
                     height: 1.5,
                   ),
                 ),

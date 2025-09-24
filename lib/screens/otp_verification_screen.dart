@@ -1,33 +1,29 @@
-// lib/screens/otp_verification_screen.dart
+// lib/screens/otp_verification_screen.dart (Updated)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/keyboard_widget.dart';
+import '../services/auth_service.dart';
+import 'home_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
-  const OTPVerificationScreen({super.key});
+  final String phoneNumber;
+  final bool isSignUp;
+
+  const OTPVerificationScreen({
+    super.key,
+    required this.phoneNumber,
+    this.isSignUp = false,
+  });
 
   @override
   State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
 }
 
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
-  final List<TextEditingController> _controllers = List.generate(
-    4,
-    (index) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
-
-  @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    super.dispose();
-  }
+  final List<String> _otpDigits = ['', '', '', ''];
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,69 +41,75 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           style: GoogleFonts.inter(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
+            fontSize: 18,
           ),
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 40),
-            // Instruction text
-            Text(
-              'Code has been sent to +91******89',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 40),
-            // OTP input fields
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(4, (index) => _buildOTPField(index)),
-            ),
-            const SizedBox(height: 40),
-            // Resend code
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Didn't receive code? ",
-                  style: GoogleFonts.inter(color: AppColors.textSecondary),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Resend Code',
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  // Instruction text
+                  Text(
+                    'Code has been sent to ${widget.phoneNumber}',
                     style: GoogleFonts.inter(
-                      color: AppColors.primaryGreen,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: AppColors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
+                  // OTP input fields
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(
+                      4,
+                      (index) => _buildOTPField(index),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            // Verify button
-            CustomButton(
-              text: 'Verify',
-              onPressed: () {
-                // Handle OTP verification
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('OTP Verified Successfully!'),
-                    backgroundColor: AppColors.primaryGreen,
+                  const SizedBox(height: 30),
+                  // Resend code
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Resend code in ",
+                        style: GoogleFonts.inter(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      Text(
+                        "55 s",
+                        style: GoogleFonts.inter(
+                          color: AppColors.primaryGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
+                  const Spacer(),
+                  // Verify button
+                  CustomButton(
+                    text: 'Verify',
+                    onPressed: _otpDigits.every((digit) => digit.isNotEmpty)
+                        ? () => _verifyOTP()
+                        : () {},
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 32),
-          ],
-        ),
+          ),
+          // Custom keyboard
+          KeyboardWidget(
+            onNumberPressed: _onNumberPressed,
+            onBackspacePressed: _onBackspacePressed,
+          ),
+        ],
       ),
     );
   }
@@ -117,36 +119,78 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       width: 64,
       height: 64,
       decoration: BoxDecoration(
-        color: AppColors.backgroundColor,
+        color: _otpDigits[index].isNotEmpty
+            ? AppColors.primaryGreen.withOpacity(0.1)
+            : AppColors.backgroundColor,
         borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        style: GoogleFonts.inter(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: AppColors.textPrimary,
+        border: Border.all(
+          color: _currentIndex == index
+              ? AppColors.primaryGreen
+              : Colors.transparent,
+          width: 2,
         ),
-        decoration: const InputDecoration(
-          counterText: '',
-          border: InputBorder.none,
-        ),
-        onChanged: (value) {
-          if (value.length == 1) {
-            if (index < 3) {
-              _focusNodes[index + 1].requestFocus();
-            } else {
-              _focusNodes[index].unfocus();
-            }
-          } else if (value.isEmpty && index > 0) {
-            _focusNodes[index - 1].requestFocus();
-          }
-        },
       ),
+      child: Center(
+        child: Text(
+          _otpDigits[index],
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onNumberPressed(String number) {
+    if (_currentIndex < 4) {
+      setState(() {
+        _otpDigits[_currentIndex] = number;
+        if (_currentIndex < 3) {
+          _currentIndex++;
+        }
+      });
+    }
+  }
+
+  void _onBackspacePressed() {
+    if (_currentIndex >= 0) {
+      setState(() {
+        if (_otpDigits[_currentIndex].isEmpty && _currentIndex > 0) {
+          _currentIndex--;
+        }
+        _otpDigits[_currentIndex] = '';
+      });
+    }
+  }
+
+  void _verifyOTP() async {
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: AppColors.primaryGreen),
+      ),
+    );
+
+    // Simulate API call
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Close loading
+    Navigator.pop(context);
+
+    // Complete authentication
+    await AuthService.completeOnboarding();
+    await AuthService.login(
+        'demo_token_${DateTime.now().millisecondsSinceEpoch}');
+
+    // Navigate to home
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      (route) => false,
     );
   }
 }

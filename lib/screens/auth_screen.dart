@@ -1,4 +1,4 @@
-// lib/screens/auth_screen.dart
+// lib/screens/auth_screen.dart (Updated - Fix the OTP navigation)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
@@ -114,7 +114,10 @@ class _AuthScreenState extends State<AuthScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [_buildCreateAccountTab(), _buildLoginTab()],
+              children: [
+                _buildCreateAccountTab(),
+                _buildLoginTab(),
+              ],
             ),
           ),
         ],
@@ -144,7 +147,9 @@ class _AuthScreenState extends State<AuthScreen>
           ),
           const SizedBox(height: 16),
           // Phone field
-          PhoneInputField(controller: _phoneController),
+          PhoneInputField(
+            controller: _phoneController,
+          ),
           const SizedBox(height: 16),
           // Password field
           _buildTextField(
@@ -158,12 +163,18 @@ class _AuthScreenState extends State<AuthScreen>
           CustomButton(
             text: 'Sign Up',
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const OTPVerificationScreen(),
-                ),
-              );
+              if (_validateSignUpForm()) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OTPVerificationScreen(
+                      phoneNumber:
+                          '+91 ${_phoneController.text}', // ← FIX: Added required phoneNumber parameter
+                      isSignUp: true,
+                    ),
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -178,7 +189,9 @@ class _AuthScreenState extends State<AuthScreen>
         children: [
           const SizedBox(height: 32),
           // Phone field
-          PhoneInputField(controller: _phoneController),
+          PhoneInputField(
+            controller: _phoneController,
+          ),
           const SizedBox(height: 16),
           // Password field
           _buildTextField(
@@ -207,12 +220,18 @@ class _AuthScreenState extends State<AuthScreen>
           CustomButton(
             text: 'Sign In',
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const OTPVerificationScreen(),
-                ),
-              );
+              if (_validateLoginForm()) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OTPVerificationScreen(
+                      phoneNumber:
+                          '+91 ${_phoneController.text}', // ← FIX: Added required phoneNumber parameter
+                      isSignUp: false,
+                    ),
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -238,7 +257,10 @@ class _AuthScreenState extends State<AuthScreen>
           color: AppColors.textSecondary,
           fontSize: 16,
         ),
-        prefixIcon: Icon(prefixIcon, color: AppColors.textSecondary),
+        prefixIcon: Icon(
+          prefixIcon,
+          color: AppColors.textSecondary,
+        ),
         filled: true,
         fillColor: AppColors.backgroundColor,
         border: OutlineInputBorder(
@@ -249,6 +271,49 @@ class _AuthScreenState extends State<AuthScreen>
           horizontal: 16,
           vertical: 16,
         ),
+      ),
+    );
+  }
+
+  // Added validation methods
+  bool _validateSignUpForm() {
+    if (_nameController.text.isEmpty) {
+      _showError('Please enter your full name');
+      return false;
+    }
+    if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
+      _showError('Please enter a valid email');
+      return false;
+    }
+    if (_phoneController.text.isEmpty) {
+      _showError('Please enter your phone number');
+      return false;
+    }
+    if (_passwordController.text.isEmpty ||
+        _passwordController.text.length < 6) {
+      _showError('Password must be at least 6 characters');
+      return false;
+    }
+    return true;
+  }
+
+  bool _validateLoginForm() {
+    if (_phoneController.text.isEmpty) {
+      _showError('Please enter your phone number');
+      return false;
+    }
+    if (_passwordController.text.isEmpty) {
+      _showError('Please enter your password');
+      return false;
+    }
+    return true;
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
       ),
     );
   }
