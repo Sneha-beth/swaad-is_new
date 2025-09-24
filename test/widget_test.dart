@@ -8,23 +8,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:swaad/main.dart';
+import 'package:swaad/screens/welcome_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Welcome screen loads correctly', (WidgetTester tester) async {
+    // Build the welcome screen and trigger a frame.
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WelcomeScreen(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the welcome screen loads
+    expect(find.byType(WelcomeScreen), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Look for some text that should be on the welcome screen
+    expect(find.text('Swaad'), findsAtLeast(1));
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('App has a Scaffold', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WelcomeScreen(),
+      ),
+    );
+
+    expect(find.byType(Scaffold), findsOneWidget);
   });
 }

@@ -1,8 +1,8 @@
 // lib/widgets/onboarding_card.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
-import '../screens/onboarding_screen.dart';
+import '../../utils/app_colors.dart';
+import '../../screens/onboarding_screen.dart';
 
 class OnboardingCard extends StatelessWidget {
   final OnboardingData data;
@@ -21,7 +21,7 @@ class OnboardingCard extends StatelessWidget {
             width: 280,
             height: 280,
             decoration: BoxDecoration(
-              color: AppColors.primaryGreen.withOpacity(0.1),
+              color: AppColors.primaryGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(140),
             ),
             child: Center(

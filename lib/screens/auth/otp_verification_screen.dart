@@ -1,11 +1,11 @@
-// lib/screens/otp_verification_screen.dart (Updated with Remember Me)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/keyboard_widget.dart';
-import '../services/auth_service.dart';
-import 'home_screen.dart';
+import 'package:provider/provider.dart';
+import '../../utils/app_colors.dart';
+import '../../widgets/common/custom_button.dart';
+import '../../widgets/common/keyboard_widget.dart';
+import '../../services/auth_service.dart';
+import '../main_navigation_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String phoneNumber;
@@ -100,7 +100,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                     text: 'Verify',
                     onPressed: _otpDigits.every((digit) => digit.isNotEmpty)
                         ? () => _verifyOTP()
-                        : () {},
+                        : null,
                   ),
                 ],
               ),
@@ -177,25 +177,57 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       ),
     );
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Simulate API call
+      await Future.delayed(const Duration(seconds: 2));
 
-    // Close loading
-    Navigator.pop(context);
+      // Complete authentication using instance method through provider
+      final authService = Provider.of<AuthService>(context, listen: false);
 
-    // Complete authentication with Remember Me preference
-    await AuthService.completeOnboarding();
-    await AuthService.login(
-      'demo_token_${DateTime.now().millisecondsSinceEpoch}',
-      rememberMe: widget.rememberMe,
-      phone: widget.phoneNumber,
-    );
+      // Complete onboarding (static method)
+      await AuthService.completeOnboarding();
 
-    // Navigate to home
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-      (route) => false,
-    );
+      // Login with phone (instance method)
+      final success = await authService.loginWithPhone(
+          widget.phoneNumber, _otpDigits.join(''));
+
+      // Close loading
+      if (mounted) Navigator.pop(context);
+
+      if (success) {
+        // Navigate to main navigation screen
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        // Show error
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid OTP. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Close loading if still showing
+      if (mounted) Navigator.pop(context);
+
+      // Show error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Verification failed. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

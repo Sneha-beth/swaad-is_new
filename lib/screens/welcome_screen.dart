@@ -1,7 +1,7 @@
 // lib/screens/welcome_screen.dart (Updated - Fix deprecated withOpacity)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../widgets/custom_button.dart';
+import '../widgets/common/custom_button.dart';
 import 'onboarding_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {

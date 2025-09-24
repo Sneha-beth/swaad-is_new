@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
+import '../../utils/app_colors.dart';
 
 class PhoneInputField extends StatelessWidget {
   final TextEditingController controller;

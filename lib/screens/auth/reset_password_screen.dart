@@ -1,8 +1,8 @@
 // lib/screens/reset_password_screen.dart (New file)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
-import '../widgets/custom_button.dart';
+import '../../utils/app_colors.dart';
+import '../../widgets/common/custom_button.dart';
 import 'login_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {

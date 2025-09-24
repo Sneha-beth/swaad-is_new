@@ -1,9 +1,9 @@
 // lib/screens/create_account_screen.dart (New)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/phone_input_field.dart';
+import '../../utils/app_colors.dart';
+import '../../widgets/common/custom_button.dart';
+import '../../widgets/common/phone_input_field.dart';
 import 'otp_verification_screen.dart';
 
 class CreateAccountScreen extends StatefulWidget {

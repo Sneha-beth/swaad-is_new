@@ -1,13 +1,13 @@
 // lib/screens/login_screen.dart (Updated with Remember Me and Forget Password)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/phone_input_field.dart';
-import '../services/auth_service.dart';
+import '../../utils/app_colors.dart';
+import '../../widgets/common/custom_button.dart';
+import '../../widgets/common/phone_input_field.dart';
+import '../../services/auth_service.dart';
 import 'otp_verification_screen.dart';
 import 'forgot_password_screen.dart';
-import 'home_screen.dart';
+import '../home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

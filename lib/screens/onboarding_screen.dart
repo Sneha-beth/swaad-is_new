@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/app_colors.dart';
-import '../widgets/onboarding_card.dart';
-import '../widgets/custom_button.dart';
-import 'social_login_screen.dart';
+import '../widgets/common/onboarding_card.dart';
+import '../widgets/common/custom_button.dart';
+import 'auth/social_login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

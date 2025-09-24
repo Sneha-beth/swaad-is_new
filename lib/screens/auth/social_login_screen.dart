@@ -1,13 +1,13 @@
-// lib/screens/social_login_screen.dart (New)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/social_login_button.dart';
-import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
+import '../../utils/app_colors.dart';
+import '../../widgets/common/custom_button.dart';
+import '../../widgets/common/social_login_button.dart';
+import '../../services/auth_service.dart';
 import 'create_account_screen.dart';
 import 'login_screen.dart';
-import 'home_screen.dart';
+import '../main_navigation_screen.dart';
 
 class SocialLoginScreen extends StatelessWidget {
   const SocialLoginScreen({super.key});
@@ -42,6 +42,13 @@ class SocialLoginScreen extends StatelessWidget {
                   'assets/images/social_login_illustration.png',
                   width: 150,
                   height: 150,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.people,
+                      size: 80,
+                      color: AppColors.primaryGreen,
+                    );
+                  },
                 ),
               ),
             ),
@@ -58,23 +65,23 @@ class SocialLoginScreen extends StatelessWidget {
             const SizedBox(height: 40),
             // Social login buttons
             SocialLoginButton(
-              icon: 'assets/images/facebook_icon.jpg',
               text: 'Continue with Facebook',
-              onPressed: () => _handleFacebookLogin(context),
+              iconPath: 'assets/images/facebook_icon.jpg',
+              onPressed: () => _signInWithFacebook(context),
             ),
-
             const SizedBox(height: 16),
+
             SocialLoginButton(
-              icon: 'assets/images/google_icon.png',
               text: 'Continue with Google',
-              onPressed: () => _handleGoogleLogin(context),
+              iconPath: 'assets/images/google_icon.png',
+              onPressed: () => _signInWithGoogle(context),
             ),
-
             const SizedBox(height: 16),
+
             SocialLoginButton(
-              icon: 'assets/images/apple_icon.png',
               text: 'Continue with Apple',
-              onPressed: () => _handleAppleLogin(context),
+              iconPath: 'assets/images/apple_icon.png',
+              onPressed: () => _signInWithApple(context),
             ),
 
             const SizedBox(height: 32),
@@ -147,77 +154,107 @@ class SocialLoginScreen extends StatelessWidget {
   }
 
   // Handle Google Login
-  void _handleGoogleLogin(BuildContext context) async {
+  void _signInWithGoogle(BuildContext context) async {
     _showLoading(context);
 
-    final result = await AuthService.signInWithGoogle();
-    Navigator.pop(context); // Close loading
+    try {
+      final result = await AuthService.signInWithGoogle();
 
-    if (result != null) {
-      await AuthService.login(
-        result['token'],
-        rememberMe: true,
-        email: result['email'],
-        name: result['name'],
-      );
+      if (context.mounted) Navigator.pop(context); // Close loading
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,
-      );
-    } else {
-      _showError(context, 'Google sign in failed');
+      if (result['success'] == true) {
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final success = await authService.login(
+            result['user']['email'], 'social_login_password');
+
+        if (success && context.mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        if (context.mounted) {
+          _showError(context, 'Google sign in failed');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading
+        _showError(context, 'Google sign in failed');
+      }
     }
   }
 
   // Handle Facebook Login
-  void _handleFacebookLogin(BuildContext context) async {
+  void _signInWithFacebook(BuildContext context) async {
     _showLoading(context);
 
-    final result = await AuthService.signInWithFacebook();
-    Navigator.pop(context); // Close loading
+    try {
+      final result = await AuthService.signInWithFacebook();
 
-    if (result != null) {
-      await AuthService.login(
-        result['token'],
-        rememberMe: true,
-        email: result['email'],
-        name: result['name'],
-      );
+      if (context.mounted) Navigator.pop(context); // Close loading
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,
-      );
-    } else {
-      _showError(context, 'Facebook sign in failed');
+      if (result['success'] == true) {
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final success = await authService.login(
+            result['user']['email'], 'social_login_password');
+
+        if (success && context.mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        if (context.mounted) {
+          _showError(context, 'Facebook sign in failed');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading
+        _showError(context, 'Facebook sign in failed');
+      }
     }
   }
 
   // Handle Apple Login
-  void _handleAppleLogin(BuildContext context) async {
+  void _signInWithApple(BuildContext context) async {
     _showLoading(context);
 
-    final result = await AuthService.signInWithApple();
-    Navigator.pop(context); // Close loading
+    try {
+      final result = await AuthService.signInWithApple();
 
-    if (result != null) {
-      await AuthService.login(
-        result['token'],
-        rememberMe: true,
-        email: result['email'],
-        name: result['name'],
-      );
+      if (context.mounted) Navigator.pop(context); // Close loading
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,
-      );
-    } else {
-      _showError(context, 'Apple sign in failed');
+      if (result['success'] == true) {
+        final authService = Provider.of<AuthService>(context, listen: false);
+        final success = await authService.login(
+            result['user']['email'], 'social_login_password');
+
+        if (success && context.mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        if (context.mounted) {
+          _showError(context, 'Apple sign in failed');
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pop(context); // Close loading
+        _showError(context, 'Apple sign in failed');
+      }
     }
   }
 

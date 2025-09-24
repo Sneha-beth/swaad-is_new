@@ -1,7 +1,6 @@
-// lib/widgets/keyboard_widget.dart (New)
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../utils/app_colors.dart';
+import '../../utils/app_colors.dart';
 
 class KeyboardWidget extends StatelessWidget {
   final Function(String) onNumberPressed;
@@ -16,16 +15,16 @@ class KeyboardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
         children: [
           // First row: 1, 2, 3
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildKey('1'),
-              _buildKey('2'),
-              _buildKey('3'),
+              _buildKeyButton('1'),
+              _buildKeyButton('2'),
+              _buildKeyButton('3'),
             ],
           ),
           const SizedBox(height: 16),
@@ -33,9 +32,9 @@ class KeyboardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildKey('4'),
-              _buildKey('5'),
-              _buildKey('6'),
+              _buildKeyButton('4'),
+              _buildKeyButton('5'),
+              _buildKeyButton('6'),
             ],
           ),
           const SizedBox(height: 16),
@@ -43,9 +42,9 @@ class KeyboardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildKey('7'),
-              _buildKey('8'),
-              _buildKey('9'),
+              _buildKeyButton('7'),
+              _buildKeyButton('8'),
+              _buildKeyButton('9'),
             ],
           ),
           const SizedBox(height: 16),
@@ -53,9 +52,9 @@ class KeyboardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const SizedBox(width: 64, height: 64), // Empty space
-              _buildKey('0'),
-              _buildBackspaceKey(),
+              const SizedBox(width: 80), // Empty space
+              _buildKeyButton('0'),
+              _buildBackspaceButton(),
             ],
           ),
         ],
@@ -63,15 +62,16 @@ class KeyboardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildKey(String number) {
+  Widget _buildKeyButton(String number) {
     return GestureDetector(
       onTap: () => onNumberPressed(number),
       child: Container(
-        width: 64,
-        height: 64,
+        width: 80,
+        height: 80,
         decoration: BoxDecoration(
           color: AppColors.backgroundColor,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(40),
+          border: Border.all(color: AppColors.borderColor),
         ),
         child: Center(
           child: Text(
@@ -87,21 +87,22 @@ class KeyboardWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildBackspaceKey() {
+  Widget _buildBackspaceButton() {
     return GestureDetector(
       onTap: onBackspacePressed,
       child: Container(
-        width: 64,
-        height: 64,
+        width: 80,
+        height: 80,
         decoration: BoxDecoration(
           color: AppColors.backgroundColor,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(40),
+          border: Border.all(color: AppColors.borderColor),
         ),
         child: const Center(
           child: Icon(
-            Icons.backspace_outlined,
-            color: AppColors.textPrimary,
+            Icons.backspace,
             size: 24,
+            color: AppColors.textPrimary,
           ),
         ),
       ),
