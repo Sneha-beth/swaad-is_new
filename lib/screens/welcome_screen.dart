@@ -65,7 +65,7 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 // Main heading
                 Text(
-                  'Welcome to\nFoodu',
+                  'Welcome to\nSwaad',
                   style: GoogleFonts.inter(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,

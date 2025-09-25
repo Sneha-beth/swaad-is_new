@@ -164,7 +164,7 @@ class _OrderManagementScreenState extends State<OrderManagementScreen>
             name: 'Veggie Pizza',
             description: 'Fresh vegetables with mozzarella cheese',
             price: 320.0,
-            image: 'assets/images/food/veggie_pizza.jpg',
+            image: 'assets/images/food/pepperoni_pizza.jpg',
             category: 'Pizza',
             isVegetarian: true,
             isAvailable: true,

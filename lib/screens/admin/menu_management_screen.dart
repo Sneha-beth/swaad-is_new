@@ -40,7 +40,7 @@ class _MenuManagementScreenState extends State<MenuManagementScreen>
       name: 'Pepperoni Pizza',
       description: 'Spicy pepperoni with mozzarella cheese',
       price: 349.0,
-      image: 'assets/images/food/pepperoni_pizza.jpg',
+      image: 'assets/images/food/pepperoni_pizza.jpeg',
       category: 'Pizza',
       isVegetarian: false,
       isAvailable: true,
